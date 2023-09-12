@@ -13,9 +13,9 @@ var pl1Sl, pl2Sl = maxSl;
 // triggerKeys
 var pl1Ky = 'a';
 var pl2Ky = 'l';
+var triggerKy  = pl1Ky; // default
 
 // walls
-// wall ctr
 var maxW = 80;
 var w1 = [];
 for (var i = 1; i <= maxW; i++) {
@@ -23,6 +23,11 @@ for (var i = 1; i <= maxW; i++) {
 }
 var w2 = w1;
 
+// targetSignCoord
+var tgX, tgY = 0;
+var tgClr = '#FF10F0';
+var tgXLmt, tgYLmt = 0;
+var stpX, stpY = 0;
 
 // indicatorBox 
 var ibLoc = 0;
@@ -40,18 +45,25 @@ document.addEventListener("keyup", somethingUp, false);
 document.addEventListener("keydown", somethingUp, false);
 
 function somethingUp(e) {
+    var dkey = e.key.toLowerCase();
     // start game
-    if (gmStart == false && e.key == 'y' || e.key == 'Y') {
+    if (gmStart == false && dkey == 'y') {
         dCanvas.style.background = '#ccc';
         gmStart = true;
         setInterval(playOn, 10);
+        attack();
     }
 
-    // attackKeys
-    var triggerKy = (curPl == 1) ? pl1Ky : pl2Ky;
-    if (gmStart == true && hasWnr == false && e.key == triggerKy.toLowerCase()) {
-        console.log([e, e.key]);
-        attack(curPl);
+    // fireKeys
+    if (gmStart == true && hasWnr == false && dkey == triggerKy.toLowerCase()) {
+        attack();
+    }
+
+    // directionKeys
+    if (gmStart == true && hasWnr == false && (dkey == 'arrowup' || dkey == 'arrowdown'
+    || dkey == 'arrowleft' || dkey == 'arrowright')) {
+        // move arrow
+        calculateTarget(dkey);
     }
 }
 
@@ -63,11 +75,11 @@ function playOn() {
     ctx.clearRect(0, 0, dCanvas.width, dCanvas.height);
 
     // draw current box
-    ctx.beginPath();
+    /*ctx.beginPath();
     ibLoc = (curPl == 1) ? 2: 249;
     ctx.rect(ibLoc, 1, 50, 30);
     ctx.stroke();
-    ctx.closePath();
+    ctx.closePath();*/
     
     // draw wall
     /*ctx.beginPath();
@@ -99,19 +111,68 @@ function playOn() {
     // sling and stone over here
     //drawSling();
     //drawStone();
+    
+
+    /*// draw target range
+    ctx.beginPath();
+    ctx.arc(75, 138, 10, 1.5*Math.PI, 0.5*Math.PI, false);
+    ctx.fillStyle = '#FF0000';
+    ctx.fill();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.arc(225, 138, 10, 1.5*Math.PI, 0.5*Math.PI, true);
+    ctx.fillStyle = '#0000FF';
+    ctx.fill();
+    ctx.closePath();*/
+
+    // target +
+    ctx.beginPath();
+    ctx.font = "24px arial";
+    ctx.fillStyle = tgClr;
+    ctx.fill();
+    ctx.fillText("+", tgX, tgY);
+    ctx.closePath();
+
+    // dotted line
+    ctx.beginPath();
+    ctx.moveTo(stpX, 138);
+    if (curPl == 1) {
+        ctx.lineTo(tgX+9, tgY-5);
+    } else {
+        ctx.lineTo(tgX+5, tgY-5);
+    }
+    ctx.stroke();
+    ctx.closePath();
 }
 
 
-function attack(curPl) {
+function attack() {
     // release rock
-    release(curPl);
+    //release(curPl);
 
     // temp scoring
     triesCnt++;
-    curPl = (curPl == 1) ? 2: 1;
     if (triesCnt == 10) {
         hasWnr = true;
     }
+    if (curPl == 1) {
+        tgX = 90;
+        tgY = 145;
+        tgClr = '#FF10F0';
+        curPl = 2;
+        stpX = 75;
+        triggerKy = pl1Ky;
+    } else {
+        tgX = 190;
+        tgY = 145;
+        tgClr = '#1F51FF';
+        curPl = 1;
+        stpX = 225;
+        triggerKy = pl2Ky;
+    }
+    tgXLmt = tgX;
+    tgYLmt = tgY;
 }
 
 function drawHouses(w1, w2) {
@@ -155,6 +216,24 @@ function drawHouses(w1, w2) {
             lx = lx - (wpl * wp);
         }
         lx = lx + wp;
+    }
+}
+
+
+function calculateTarget(dkey) {
+    var minX = tgXLmt - 10;
+    var maxX = tgXLmt + 10;
+    var minY = tgYLmt - 10;
+    var maxY = tgYLmt + 10;
+
+    if (dkey == 'arrowup' && tgY  > minY) {
+        tgY = tgY - 1;
+    } else if (dkey == 'arrowdown' && tgY < maxY) {
+        tgY = tgY + 1;
+    } else if (dkey == 'arrowleft' && tgX > minX) {
+        tgX = tgX - 1;
+    } else if (dkey == 'arrowright' && tgX < maxX) {
+        tgX = tgX + 1;
     }
 }
 
