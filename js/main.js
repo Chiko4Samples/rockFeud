@@ -2,13 +2,9 @@ var gmStart = false; // games start
 var hasWnr = false; // games stop
 var curPl = 1; // current player
 
-// scores:: maybe not needed
+// scores
 var pl1Sr = 0;
 var pl2Sr = 0;
-
-// solider cnts
-var maxSl = 13;
-var pl1Sl, pl2Sl = maxSl;
 
 // triggerKeys
 var pl1Ky = 'a';
@@ -38,10 +34,7 @@ var enpX, enpY = 0;
 var blX, blY = 0;
 var blXm = 2;
 var blYm = -2;
-
-// indicatorBox 
-var ibLoc = 0;
-
+var blSize = 10;
 
 // temp
 var triesCnt = 0;
@@ -59,6 +52,7 @@ function somethingUp(e) {
     // start game
     if (gmStart == false && dkey == 'y') {
         dCanvas.style.background = '#ccc';
+        document.getElementById('ruleBox').style.display = 'block';
         gmStart = true;
         setInterval(playOn, 10);
         
@@ -86,8 +80,6 @@ function somethingUp(e) {
         calculateTarget(dkey);
     }
 }
-
-setInterval(playOn, 10);
 
 // init object
 function playOn() {
@@ -144,22 +136,21 @@ function playOn() {
     if (hasFired == true) {
         ctx.beginPath();
         ctx.fillStyle = 'green';
-        ctx.arc(blX, blY, 5, 0, Math.PI * 2, false);
+        ctx.arc(blX, blY, blSize, 0, Math.PI * 2, false);
         ctx.fill();
         ctx.closePath();
 
-        if (blX > dCanvas.width  - 5 || blX < 5) {
+        if (blX > dCanvas.width - blSize || blX < blSize) {
             blXm = -blXm;
         }
-        if (blY > dCanvas.height - 5 || blY < 5) {
+        if (blY > dCanvas.height - blSize || blY < blSize) {
             blYm = -blYm;
         }
 
         blX += blXm;
         blY += blYm;
-
         // check hit
-        checkHits(blX, blY, (curPl == 1) ? w2 : w1);
+        checkHits((curPl == 1) ? w2 : w1);
     }
 }
 
@@ -168,6 +159,7 @@ function attack() {
     // release rock
     hasHit = false;
     hasFired = true;
+    //release();
 
     // temp scoring
     triesCnt++;
@@ -201,6 +193,7 @@ function drawHouses(w1, w2) {
     var wpl = 8;
 
     for (var i = 1; i <= maxW; i++) {
+
         // check hit
         var curB = w1[i];
         w1[i].x = lx;
@@ -266,11 +259,11 @@ function checkHits(wall) {
         // not damaged
         if (wall[ix].c == 0) {
             // check if ball is within coordinates
-            if (blX > wall[ix].x && blX < wall[ix].x + 5 &&
-                    blY > wall[ix].y && blY < wall[ix].y + 5) {
-                hasHit = true;
-                hasFired = false;
-                wall[ix].c = 1;
+            if (blX > wall[ix].x && blX < wall[ix].x + blSize &&
+                blY > wall[ix].y && blY < wall[ix].y + blSize) {
+                    hasHit = true;
+                    hasFired = false;
+                    wall[ix].c = 1;
             }
         }
     }

@@ -7,8 +7,18 @@ canvas {
     display: block;
     margin: 0 auto;
     width: 700px;
-    background-color: #ccc; /*url('../img/topImg.png') no-repeat;*/
+    background: url('../img/topImg.png') no-repeat;
     height: 400px;
 }
 
-/* menu overlay display/prompt */
+#ruleBox {
+    margin: 0 auto;
+    width: 700px;
+}
+#ruleBox p:first-child {
+    margin-top: 1em;
+}
+
+#ruleBox p {
+    margin: 0;
+}
