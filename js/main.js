@@ -14,7 +14,7 @@ var hasHit = false;
 var hasFired = false;
 
 // walls
-var maxW = 80;
+var maxW = 48;
 var w1 = [];
 var w2 = [];
 for (var i = 1; i <= maxW; i++) {
@@ -61,7 +61,7 @@ function somethingUp(e) {
         tgY = 145;
         tgClr = '#FF10F0';
         curPl = 1;
-        stpX = 75;
+        stpX = 70;
         triggerKy = pl1Ky;
         tgXLmt = tgX;
         tgYLmt = tgY;
@@ -108,7 +108,7 @@ function playOn() {
 
     // draw weapon left
     ctx.beginPath();
-    ctx.rect(65, 128, 10, 20);
+    ctx.rect(62, 128, 10, 20);
     ctx.fillStyle = '#FF0000';
     ctx.fill();
     ctx.closePath();
@@ -181,7 +181,7 @@ function attack() {
         tgY = 145;
         tgClr = '#FF10F0';
         curPl = 2;
-        stpX = 75;
+        stpX = 70;
         triggerKy = pl1Ky;
     } else {
         tgX = 190;
@@ -199,10 +199,11 @@ function drawHouses(w1, w2) {
     // left
     var lx = 2;
     var ly = 70;
-    var wp = 8;
-    var wpl = 8;
+    var wp = 10;
+    var wpl = 6;
     var sc1 = 0;
     var sc2 = 0;
+    var brickSz = 8;
 
     for (var i = 1; i <= maxW; i++) {
         // check hit
@@ -211,7 +212,7 @@ function drawHouses(w1, w2) {
         w1[i].y = ly;
         if (curB.c == 0) {
             ctx.beginPath();
-            ctx.rect(lx, ly, 6, 6);
+            ctx.rect(lx, ly, brickSz, brickSz);
             ctx.fillStyle = '#FF0000';
             ctx.fill();
             ctx.closePath();
@@ -235,7 +236,7 @@ function drawHouses(w1, w2) {
         w2[i].y = ly;
         if (curB.c == 0) {
             ctx.beginPath();
-            ctx.rect(lx, ly, 6, 6);
+            ctx.rect(lx, ly, brickSz, brickSz);
             ctx.fillStyle = '#0000FF';
             ctx.fill();
             ctx.closePath();
@@ -248,6 +249,12 @@ function drawHouses(w1, w2) {
         lx = lx + wp;
     }
     pl2Sr = sc2;
+
+    if (pl1Sr == 0 || pl2Sr == 0) {
+        // game over
+        hasWnr = true;
+        document.getElementById('endScreen').style.display = 'block';
+    }
 }
 
 
