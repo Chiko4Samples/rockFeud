@@ -36,16 +36,13 @@ var blXm = 2;
 var blYm = -2;
 var blSize = 10;
 
-// temp
-var triesCnt = 0;
-
 //canvas init
 const dCanvas = document.getElementById('dCanvas');
-const ctx = dCanvas.getContext("2d");
+const ctx = dCanvas.getContext('2d');
             
 // key events
-document.addEventListener("keyup", somethingUp, false);
-document.addEventListener("keydown", somethingUp, false);
+document.addEventListener('keyup', somethingUp, false);
+document.addEventListener('keydown', somethingUp, false);
 
 function somethingUp(e) {
     var dkey = e.key.toLowerCase();
@@ -88,14 +85,14 @@ function playOn() {
 
     // score boards
     ctx.beginPath();
-    ctx.font = "36px arial";
+    ctx.font = '36px arial';
     ctx.fillStyle = '#FF10F0';
     ctx.fill();
     ctx.fillText(pl1Sr, 5, 30);
     ctx.closePath();
 
     ctx.beginPath();
-    ctx.font = "36px arial";
+    ctx.font = '36px arial';
     ctx.fillStyle = '#1F51FF';
     ctx.fill();
     ctx.fillText(pl2Sr, 250, 30);
@@ -123,10 +120,10 @@ function playOn() {
     if (hasHit == true) {
         // target +
         ctx.beginPath();
-        ctx.font = "24px arial";
+        ctx.font = '24px arial';
         ctx.fillStyle = tgClr;
         ctx.fill();
-        ctx.fillText("+", tgX, tgY);
+        ctx.fillText('+', tgX, tgY);
         ctx.closePath();
 
         // target line
@@ -145,7 +142,7 @@ function playOn() {
     
     if (hasFired == true) {
         ctx.beginPath();
-        ctx.fillStyle = 'green';
+        ctx.fillStyle = '#7B3F00';
         ctx.arc(blX, blY, blSize, 0, Math.PI * 2, false);
         ctx.fill();
         ctx.closePath();
@@ -153,11 +150,16 @@ function playOn() {
         if (blX > dCanvas.width - blSize || blX < blSize) {
             blXm = -blXm;
         }
+
         if (blY > dCanvas.height - blSize || blY < blSize) {
             blYm = -blYm;
         }
 
-        blX += blXm;
+        if (curPl == 1) {
+            blX += blXm;
+        } else {
+            blX -= blXm;
+        }
         blY += blYm;
         // check hit
         checkHits((curPl == 1) ? w2 : w1);
@@ -169,13 +171,6 @@ function attack() {
     // release rock
     hasHit = false;
     hasFired = true;
-    //release();
-
-    // temp scoring
-    triesCnt++;
-    if (triesCnt == 10) {
-        hasWnr = true;
-    }
     if (curPl == 1) {
         tgX = 90;
         tgY = 145;
