@@ -60,7 +60,7 @@ function somethingUp(e) {
         tgX = 90;
         tgY = 145;
         tgClr = '#FF10F0';
-        curPl = 2;
+        curPl = 1;
         stpX = 75;
         triggerKy = pl1Ky;
         tgXLmt = tgX;
@@ -81,17 +81,27 @@ function somethingUp(e) {
     }
 }
 
-// init object
+// start
 function playOn() {
     // parapara mangga effect
     ctx.clearRect(0, 0, dCanvas.width, dCanvas.height);
-    
-    // draw wall
+
+    // score boards
     ctx.beginPath();
-    ctx.rect(148, 100, 2, 75);
-    ctx.fillStyle = '#a5700d';
+    ctx.font = "36px arial";
+    ctx.fillStyle = '#FF10F0';
     ctx.fill();
+    ctx.fillText(pl1Sr, 5, 30);
     ctx.closePath();
+
+    ctx.beginPath();
+    ctx.font = "36px arial";
+    ctx.fillStyle = '#1F51FF';
+    ctx.fill();
+    ctx.fillText(pl2Sr, 250, 30);
+    ctx.closePath();
+    
+    // draw wall :: TODO: make the stone bounce off
 
     // draw house left & right
     drawHouses(w1, w2);
@@ -122,7 +132,7 @@ function playOn() {
         // target line
         ctx.beginPath();
         ctx.moveTo(stpX, stpY);
-        enpX = (curPl == 1) ? tgX+9 : tgX+5;
+        enpX = (curPl == 1) ? tgX+5 : tgX+5;
         enpY = tgY - 5;
         ctx.lineTo(enpX, enpY);
         ctx.stroke();
@@ -191,9 +201,10 @@ function drawHouses(w1, w2) {
     var ly = 70;
     var wp = 8;
     var wpl = 8;
+    var sc1 = 0;
+    var sc2 = 0;
 
     for (var i = 1; i <= maxW; i++) {
-
         // check hit
         var curB = w1[i];
         w1[i].x = lx;
@@ -204,6 +215,7 @@ function drawHouses(w1, w2) {
             ctx.fillStyle = '#FF0000';
             ctx.fill();
             ctx.closePath();
+            sc1++;
         }
         if (i % wpl == 0) {
             ly = ly + wp;
@@ -211,6 +223,7 @@ function drawHouses(w1, w2) {
         }
         lx = lx + wp;
     }
+    pl1Sr = sc1;
 
     // right
     lx = 236;
@@ -226,6 +239,7 @@ function drawHouses(w1, w2) {
             ctx.fillStyle = '#0000FF';
             ctx.fill();
             ctx.closePath();
+            sc2++;
         }
         if (i % wpl == 0) {
             ly = ly + wp;
@@ -233,6 +247,7 @@ function drawHouses(w1, w2) {
         }
         lx = lx + wp;
     }
+    pl2Sr = sc2;
 }
 
 
