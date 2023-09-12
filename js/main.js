@@ -248,7 +248,15 @@ function drawHouses(w1, w2) {
     if (pl1Sr == 0 || pl2Sr == 0) {
         // game over
         hasWnr = true;
-        document.getElementById('endScreen').style.display = 'block';
+        setInterval(function() {
+            if (document.getElementById('endScreen').style.display != 'block') {
+            var addTxt = (pl1Sr == 0)? 'THE RED TEAM WON!' : 'THE BLUE TEAM WON!';
+            addTxt = addTxt + document.getElementById('endScreen').getElementsByTagName('h2')[0].innerHTML;
+            document.getElementById('endScreen').getElementsByTagName('h2')[0].innerHTML = addTxt;
+            document.getElementById('endScreen').style.display = 'block';
+            }
+        }, 4000);
+        window.location.reload();
     }
 }
 
