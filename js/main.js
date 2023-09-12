@@ -14,20 +14,30 @@ var pl1Sl, pl2Sl = maxSl;
 var pl1Ky = 'a';
 var pl2Ky = 'l';
 var triggerKy  = pl1Ky; // default
+var hasHit = false;
+var hasFired = false;
 
 // walls
 var maxW = 80;
 var w1 = [];
+var w2 = [];
 for (var i = 1; i <= maxW; i++) {
-    w1[i] = {x:0, y:0, c: 0};
+    w1[i] = {x:0, y:0, c:0};
+    w2[i] = {x:0, y:0, c:0};
 }
-var w2 = w1;
 
 // targetSignCoord
 var tgX, tgY = 0;
 var tgClr = '#FF10F0';
 var tgXLmt, tgYLmt = 0;
-var stpX, stpY = 0;
+var stpX = 0;
+var stpY = 138; 
+var enpX, enpY = 0;
+
+// ballCoords
+var blX, blY = 0;
+var blXm = 2;
+var blYm = -2;
 
 // indicatorBox 
 var ibLoc = 0;
@@ -51,7 +61,17 @@ function somethingUp(e) {
         dCanvas.style.background = '#ccc';
         gmStart = true;
         setInterval(playOn, 10);
-        attack();
+        
+        // initial
+        tgX = 90;
+        tgY = 145;
+        tgClr = '#FF10F0';
+        curPl = 2;
+        stpX = 75;
+        triggerKy = pl1Ky;
+        tgXLmt = tgX;
+        tgYLmt = tgY;
+        hasHit = true;
     }
 
     // fireKeys
@@ -73,23 +93,13 @@ setInterval(playOn, 10);
 function playOn() {
     // parapara mangga effect
     ctx.clearRect(0, 0, dCanvas.width, dCanvas.height);
-
-    // draw current box
-    /*ctx.beginPath();
-    ibLoc = (curPl == 1) ? 2: 249;
-    ctx.rect(ibLoc, 1, 50, 30);
-    ctx.stroke();
-    ctx.closePath();*/
     
     // draw wall
-    /*ctx.beginPath();
-    ctx.rect(145, 100, 10, 75);
+    ctx.beginPath();
+    ctx.rect(148, 100, 2, 75);
     ctx.fillStyle = '#a5700d';
     ctx.fill();
-    ctx.closePath();*/
-
-    // draw counter left
-    // draw counter right
+    ctx.closePath();
 
     // draw house left & right
     drawHouses(w1, w2);
@@ -107,49 +117,57 @@ function playOn() {
     ctx.fillStyle = '#0000FF';
     ctx.fill();
     ctx.closePath();    
-    
-    // sling and stone over here
-    //drawSling();
-    //drawStone();
-    
 
-    /*// draw target range
-    ctx.beginPath();
-    ctx.arc(75, 138, 10, 1.5*Math.PI, 0.5*Math.PI, false);
-    ctx.fillStyle = '#FF0000';
-    ctx.fill();
-    ctx.closePath();
+    if (hasHit == true) {
+        // target +
+        ctx.beginPath();
+        ctx.font = "24px arial";
+        ctx.fillStyle = tgClr;
+        ctx.fill();
+        ctx.fillText("+", tgX, tgY);
+        ctx.closePath();
 
-    ctx.beginPath();
-    ctx.arc(225, 138, 10, 1.5*Math.PI, 0.5*Math.PI, true);
-    ctx.fillStyle = '#0000FF';
-    ctx.fill();
-    ctx.closePath();*/
+        // target line
+        ctx.beginPath();
+        ctx.moveTo(stpX, stpY);
+        enpX = (curPl == 1) ? tgX+9 : tgX+5;
+        enpY = tgY - 5;
+        ctx.lineTo(enpX, enpY);
+        ctx.stroke();
+        ctx.closePath();
 
-    // target +
-    ctx.beginPath();
-    ctx.font = "24px arial";
-    ctx.fillStyle = tgClr;
-    ctx.fill();
-    ctx.fillText("+", tgX, tgY);
-    ctx.closePath();
-
-    // dotted line
-    ctx.beginPath();
-    ctx.moveTo(stpX, 138);
-    if (curPl == 1) {
-        ctx.lineTo(tgX+9, tgY-5);
-    } else {
-        ctx.lineTo(tgX+5, tgY-5);
+        // ball starting point
+        blX = stpX;
+        blY = stpY;
     }
-    ctx.stroke();
-    ctx.closePath();
+    
+    if (hasFired == true) {
+        ctx.beginPath();
+        ctx.fillStyle = 'green';
+        ctx.arc(blX, blY, 5, 0, Math.PI * 2, false);
+        ctx.fill();
+        ctx.closePath();
+
+        if (blX > dCanvas.width  - 5 || blX < 5) {
+            blXm = -blXm;
+        }
+        if (blY > dCanvas.height - 5 || blY < 5) {
+            blYm = -blYm;
+        }
+
+        blX += blXm;
+        blY += blYm;
+
+        // check hit
+        checkHits(blX, blY, (curPl == 1) ? w2 : w1);
+    }
 }
 
 
 function attack() {
     // release rock
-    //release(curPl);
+    hasHit = false;
+    hasFired = true;
 
     // temp scoring
     triesCnt++;
@@ -181,9 +199,12 @@ function drawHouses(w1, w2) {
     var ly = 70;
     var wp = 8;
     var wpl = 8;
+
     for (var i = 1; i <= maxW; i++) {
         // check hit
         var curB = w1[i];
+        w1[i].x = lx;
+        w1[i].y = ly;
         if (curB.c == 0) {
             ctx.beginPath();
             ctx.rect(lx, ly, 6, 6);
@@ -204,6 +225,8 @@ function drawHouses(w1, w2) {
     for (var i = 1; i <= maxW; i++) {
         // check hit
         var curB = w2[i];
+        w2[i].x = lx;
+        w2[i].y = ly;
         if (curB.c == 0) {
             ctx.beginPath();
             ctx.rect(lx, ly, 6, 6);
@@ -238,8 +261,17 @@ function calculateTarget(dkey) {
 }
 
 
-function release(pl) {
-    // get tip of arrow(which arrow was used and which side to attach is based on pl)
-    // calculate trajectory from tip of arrow
-    // calculate number of deminished soldiers from opponent side through rocks coordinates
+function checkHits(wall) {
+    for (var ix=1; ix < wall.length; ix++) {
+        // not damaged
+        if (wall[ix].c == 0) {
+            // check if ball is within coordinates
+            if (blX > wall[ix].x && blX < wall[ix].x + 5 &&
+                    blY > wall[ix].y && blY < wall[ix].y + 5) {
+                hasHit = true;
+                hasFired = false;
+                wall[ix].c = 1;
+            }
+        }
+    }
 }
