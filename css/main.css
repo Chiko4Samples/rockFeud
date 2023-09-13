@@ -7,7 +7,7 @@ canvas {
     display: block;
     margin: 0 auto;
     width: 700px;
-    background: url('../img/topImg.png') no-repeat;
+    background: url('topImg.png') no-repeat;
     height: 400px;
 }
 
