@@ -164,7 +164,7 @@ function playOn() {
         blY += blYm;
 
         // check hit
-        checkHits((curPl == 1) ? w2 : w1);
+        checkHits();
     }
 }
 
@@ -281,7 +281,7 @@ function calculateTarget(dkey) {
 }
 
 
-function checkHits(wall) {
+function checkHits() {
 
     var hitWall = false;
     // check if ball hits wall
@@ -293,15 +293,19 @@ function checkHits(wall) {
     }
 
     if (hitWall == false) {
-        for (var ix=1; ix < wall.length; ix++) {
-            // not damaged
-            if (wall[ix].c == 0) {
-                // check if ball is within coordinates
-                if (blX > wall[ix].x - blSize && blX < wall[ix].x + blSize &&
-                    blY > wall[ix].y - blSize && blY < wall[ix].y + blSize) {
-                        hasHit = true;
-                        hasFired = false;
-                        wall[ix].c = 1;
+        var walls = [w1, w2];
+        for (var vx = 0; vx < walls.length; vx++) {
+            var wall = walls[vx];
+            for (var ix=1; ix < wall.length; ix++) {
+                // not damaged
+                if (wall[ix].c == 0) {
+                    // check if ball is within coordinates
+                    if (blX > wall[ix].x - blSize && blX < wall[ix].x + blSize &&
+                        blY > wall[ix].y - blSize && blY < wall[ix].y + blSize) {
+                            hasHit = true;
+                            hasFired = false;
+                            wall[ix].c = 1;
+                    }
                 }
             }
         }
