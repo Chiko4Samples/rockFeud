@@ -14,13 +14,15 @@ var hasHit = false;
 var hasFired = false;
 
 // walls
-var maxW = 48;
+var maxW = 20;
 var w1 = [];
 var w2 = [];
 for (var i = 1; i <= maxW; i++) {
     w1[i] = {x:0, y:0, c:0};
     w2[i] = {x:0, y:0, c:0};
 }
+var wlX = 145;
+var wlY = 100;
 
 // targetSignCoord
 var tgX, tgY = 0;
@@ -34,7 +36,7 @@ var enpX, enpY = 0;
 var blX, blY = 0;
 var blXm = 2;
 var blYm = -2;
-var blSize = 10;
+var blSize = 5;
 
 //canvas init
 const dCanvas = document.getElementById('dCanvas');
@@ -80,7 +82,6 @@ function somethingUp(e) {
 
 // start
 function playOn() {
-    // parapara mangga effect
     ctx.clearRect(0, 0, dCanvas.width, dCanvas.height);
 
     // score boards
@@ -98,7 +99,12 @@ function playOn() {
     ctx.fillText(pl2Sr, 250, 30);
     ctx.closePath();
     
-    // draw wall :: TODO: make the stone bounce off
+    // draw wall 
+    ctx.beginPath();
+    ctx.rect(wlX, wlY, 5, 50);
+    ctx.fillStyle = '#a5700d';
+    ctx.fill();
+    ctx.closePath();
 
     // draw house left & right
     drawHouses(w1, w2);
@@ -106,14 +112,14 @@ function playOn() {
     // draw weapon left
     ctx.beginPath();
     ctx.rect(62, 128, 10, 20);
-    ctx.fillStyle = '#FF0000';
+    ctx.fillStyle = '#FF10F0';
     ctx.fill();
     ctx.closePath();
     
     // draw weapon right
     ctx.beginPath();
-    ctx.rect(225, 128, 10, 20);
-    ctx.fillStyle = '#0000FF';
+    ctx.rect(227, 128, 10, 20);
+    ctx.fillStyle = '#1F51FF';
     ctx.fill();
     ctx.closePath();    
 
@@ -136,8 +142,8 @@ function playOn() {
         ctx.closePath();
 
         // ball starting point
-        blX = stpX;
-        blY = stpY;
+        blX = enpX;
+        blY = enpY;
     }
     
     if (hasFired == true) {
@@ -150,17 +156,13 @@ function playOn() {
         if (blX > dCanvas.width - blSize || blX < blSize) {
             blXm = -blXm;
         }
-
         if (blY > dCanvas.height - blSize || blY < blSize) {
             blYm = -blYm;
         }
 
-        if (curPl == 1) {
-            blX += blXm;
-        } else {
-            blX -= blXm;
-        }
+        blX += blXm;
         blY += blYm;
+
         // check hit
         checkHits((curPl == 1) ? w2 : w1);
     }
@@ -179,11 +181,11 @@ function attack() {
         stpX = 70;
         triggerKy = pl1Ky;
     } else {
-        tgX = 190;
+        tgX = 200;
         tgY = 145;
         tgClr = '#1F51FF';
         curPl = 1;
-        stpX = 225;
+        stpX = 230;
         triggerKy = pl2Ky;
     }
     tgXLmt = tgX;
@@ -193,12 +195,12 @@ function attack() {
 function drawHouses(w1, w2) {
     // left
     var lx = 2;
-    var ly = 70;
-    var wp = 10;
-    var wpl = 6;
+    var ly = 102;
+    var wp = 12;
+    var wpl = 5;
     var sc1 = 0;
     var sc2 = 0;
-    var brickSz = 8;
+    var brickSz = 10;
 
     for (var i = 1; i <= maxW; i++) {
         // check hit
@@ -222,8 +224,8 @@ function drawHouses(w1, w2) {
     pl1Sr = sc1;
 
     // right
-    lx = 236;
-    ly = 70;
+    lx = 239;
+    ly = 102;
     for (var i = 1; i <= maxW; i++) {
         // check hit
         var curB = w2[i];
@@ -250,7 +252,7 @@ function drawHouses(w1, w2) {
         hasWnr = true;
         setInterval(function() {
             if (document.getElementById('endScreen').style.display != 'block') {
-            var addTxt = (pl1Sr == 0)? 'THE RED TEAM WON!' : 'THE BLUE TEAM WON!';
+            var addTxt = (pl1Sr == 0)? 'RED ARMY WINS!' : 'BLUE ARMY WINS!';
             addTxt = addTxt + document.getElementById('endScreen').getElementsByTagName('h2')[0].innerHTML;
             document.getElementById('endScreen').getElementsByTagName('h2')[0].innerHTML = addTxt;
             document.getElementById('endScreen').style.display = 'block';
@@ -264,8 +266,8 @@ function drawHouses(w1, w2) {
 function calculateTarget(dkey) {
     var minX = tgXLmt - 10;
     var maxX = tgXLmt + 10;
-    var minY = tgYLmt - 10;
-    var maxY = tgYLmt + 10;
+    var minY = tgYLmt - 20;
+    var maxY = tgYLmt + 20;
 
     if (dkey == 'arrowup' && tgY  > minY) {
         tgY = tgY - 1;
@@ -280,15 +282,27 @@ function calculateTarget(dkey) {
 
 
 function checkHits(wall) {
-    for (var ix=1; ix < wall.length; ix++) {
-        // not damaged
-        if (wall[ix].c == 0) {
-            // check if ball is within coordinates
-            if (blX > wall[ix].x && blX < wall[ix].x + blSize &&
-                blY > wall[ix].y && blY < wall[ix].y + blSize) {
-                    hasHit = true;
-                    hasFired = false;
-                    wall[ix].c = 1;
+
+    var hitWall = false;
+    // check if ball hits wall
+    if (blX > wlX - blSize && blX < wlX + blSize &&
+        blY > wlY - blSize && blY < wlY + 75 + blSize) {
+        hasHit = true;
+        hasFired = false;
+        hitWall = true;
+    }
+
+    if (hitWall == false) {
+        for (var ix=1; ix < wall.length; ix++) {
+            // not damaged
+            if (wall[ix].c == 0) {
+                // check if ball is within coordinates
+                if (blX > wall[ix].x - blSize && blX < wall[ix].x + blSize &&
+                    blY > wall[ix].y - blSize && blY < wall[ix].y + blSize) {
+                        hasHit = true;
+                        hasFired = false;
+                        wall[ix].c = 1;
+                }
             }
         }
     }
